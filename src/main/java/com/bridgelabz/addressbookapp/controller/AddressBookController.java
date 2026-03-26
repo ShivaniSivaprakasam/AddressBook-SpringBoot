@@ -25,58 +25,50 @@ public class AddressBookController {
     public ResponseEntity<ResponseDTO> getAllContacts() {
         log.info("Fetching all contacts");
         List<AddressBook> contacts = addressBookService.getAllContacts();
-        ResponseDTO responseDTO = new ResponseDTO("Fetched all contacts successfully", contacts);
-        return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+        return new ResponseEntity<>(
+                new ResponseDTO("Fetched all contacts successfully", contacts),
+                HttpStatus.OK
+        );
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ResponseDTO> getContactById(@PathVariable int id) {
-        log.info("Fetching contact {}", id);
+        log.info("Fetching contact with id: {}", id);
         AddressBook contact = addressBookService.getContactById(id);
-
-        if (contact != null) {
-            ResponseDTO responseDTO = new ResponseDTO("Fetched contact successfully", contact);
-            return new ResponseEntity<>(responseDTO, HttpStatus.OK);
-        }
-
-        ResponseDTO responseDTO = new ResponseDTO("Contact not found", null);
-        return new ResponseEntity<>(responseDTO, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(
+                new ResponseDTO("Fetched contact successfully", contact),
+                HttpStatus.OK
+        );
     }
 
     @PostMapping
     public ResponseEntity<ResponseDTO> addContact(@Valid @RequestBody AddressBookDTO addressBookDTO) {
-        log.info("Adding contact");
+        log.info("Adding new contact");
         AddressBook newContact = addressBookService.addContact(addressBookDTO);
-        ResponseDTO responseDTO = new ResponseDTO("Contact added successfully", newContact);
-        return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
+        return new ResponseEntity<>(
+                new ResponseDTO("Contact added successfully", newContact),
+                HttpStatus.CREATED
+        );
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ResponseDTO> updateContact(@PathVariable int id,
                                                      @Valid @RequestBody AddressBookDTO addressBookDTO) {
-        log.info("Updating contact {}", id);
+        log.info("Updating contact with id: {}", id);
         AddressBook updatedContact = addressBookService.updateContact(id, addressBookDTO);
-
-        if (updatedContact != null) {
-            ResponseDTO responseDTO = new ResponseDTO("Contact updated successfully", updatedContact);
-            return new ResponseEntity<>(responseDTO, HttpStatus.OK);
-        }
-
-        ResponseDTO responseDTO = new ResponseDTO("Contact not found", null);
-        return new ResponseEntity<>(responseDTO, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(
+                new ResponseDTO("Contact updated successfully", updatedContact),
+                HttpStatus.OK
+        );
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDTO> deleteContact(@PathVariable int id) {
-        log.info("Deleting contact {}", id);
-        boolean deleted = addressBookService.deleteContact(id);
-
-        if (deleted) {
-            ResponseDTO responseDTO = new ResponseDTO("Contact deleted successfully", null);
-            return new ResponseEntity<>(responseDTO, HttpStatus.OK);
-        }
-
-        ResponseDTO responseDTO = new ResponseDTO("Contact not found", null);
-        return new ResponseEntity<>(responseDTO, HttpStatus.NOT_FOUND);
+        log.info("Deleting contact with id: {}", id);
+        addressBookService.deleteContact(id);
+        return new ResponseEntity<>(
+                new ResponseDTO("Contact deleted successfully", null),
+                HttpStatus.OK
+        );
     }
 }

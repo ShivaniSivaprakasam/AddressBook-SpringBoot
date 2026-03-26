@@ -1,6 +1,7 @@
 package com.bridgelabz.addressbookapp.service;
 
 import com.bridgelabz.addressbookapp.dto.AddressBookDTO;
+import com.bridgelabz.addressbookapp.exception.AddressBookException;
 import com.bridgelabz.addressbookapp.model.AddressBook;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,27 +17,21 @@ public class AddressBookService {
     private int contactIdCounter = 1;
 
     public List<AddressBook> getAllContacts() {
-        log.info("Getting all contacts from service");
-        if (addressBookList.isEmpty()) {
-            log.warn("Address book list is currently empty");
-        }
+        log.info("Getting all contacts");
         return addressBookList;
     }
 
     public AddressBook getContactById(int id) {
-        log.info("Searching contact by id: {}", id);
-        for (AddressBook contact : addressBookList) {
-            if (contact.getId() == id) {
-                log.info("Contact found with id: {}", id);
-                return contact;
-            }
-        }
-        log.error("Contact not found with id: {}", id);
-        return null;
+        log.info("Getting contact by id: {}", id);
+
+        return addressBookList.stream()
+                .filter(contact -> contact.getId() == id)
+                .findFirst()
+                .orElseThrow(() -> new AddressBookException("Address Book contact not found with id: " + id));
     }
 
     public AddressBook addContact(AddressBookDTO addressBookDTO) {
-        log.info("Adding contact: {}", addressBookDTO);
+        log.info("Adding new contact");
 
         AddressBook newContact = new AddressBook(
                 contactIdCounter++,
@@ -46,40 +41,32 @@ public class AddressBookService {
         );
 
         addressBookList.add(newContact);
-        log.info("Contact added successfully with id: {}", newContact.getId());
         return newContact;
     }
 
     public AddressBook updateContact(int id, AddressBookDTO addressBookDTO) {
         log.info("Updating contact with id: {}", id);
 
-        for (AddressBook contact : addressBookList) {
-            if (contact.getId() == id) {
-                contact.setName(addressBookDTO.getName());
-                contact.setCity(addressBookDTO.getCity());
-                contact.setState(addressBookDTO.getState());
+        AddressBook contact = addressBookList.stream()
+                .filter(c -> c.getId() == id)
+                .findFirst()
+                .orElseThrow(() -> new AddressBookException("Cannot update. Address Book contact not found with id: " + id));
 
-                log.info("Contact updated successfully with id: {}", id);
-                return contact;
-            }
-        }
+        contact.setName(addressBookDTO.getName());
+        contact.setCity(addressBookDTO.getCity());
+        contact.setState(addressBookDTO.getState());
 
-        log.error("Unable to update. Contact not found with id: {}", id);
-        return null;
+        return contact;
     }
 
-    public boolean deleteContact(int id) {
+    public void deleteContact(int id) {
         log.info("Deleting contact with id: {}", id);
 
-        for (int i = 0; i < addressBookList.size(); i++) {
-            if (addressBookList.get(i).getId() == id) {
-                addressBookList.remove(i);
-                log.info("Contact deleted successfully with id: {}", id);
-                return true;
-            }
-        }
+        AddressBook contact = addressBookList.stream()
+                .filter(c -> c.getId() == id)
+                .findFirst()
+                .orElseThrow(() -> new AddressBookException("Cannot delete. Address Book contact not found with id: " + id));
 
-        log.error("Unable to delete. Contact not found with id: {}", id);
-        return false;
+        addressBookList.remove(contact);
     }
 }
