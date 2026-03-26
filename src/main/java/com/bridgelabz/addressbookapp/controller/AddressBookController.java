@@ -1,5 +1,6 @@
 package com.bridgelabz.addressbookapp.controller;
 
+import com.bridgelabz.addressbookapp.dto.AddressBookDTO;
 import com.bridgelabz.addressbookapp.model.AddressBook;
 import com.bridgelabz.addressbookapp.service.AddressBookService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,15 +32,16 @@ public class AddressBookController {
     }
 
     @PostMapping
-    public ResponseEntity<AddressBook> addContact(@RequestBody AddressBook addressBook) {
-        return new ResponseEntity<>(addressBookService.addContact(addressBook), HttpStatus.CREATED);
+    public ResponseEntity<AddressBook> addContact(@RequestBody AddressBookDTO addressBookDTO) {
+        AddressBook newContact = addressBookService.addContact(addressBookDTO);
+        return new ResponseEntity<>(newContact, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateContact(@PathVariable int id, @RequestBody AddressBook updatedAddressBook) {
-        AddressBook contact = addressBookService.updateContact(id, updatedAddressBook);
-        if (contact != null) {
-            return new ResponseEntity<>(contact, HttpStatus.OK);
+    public ResponseEntity<?> updateContact(@PathVariable int id, @RequestBody AddressBookDTO addressBookDTO) {
+        AddressBook updatedContact = addressBookService.updateContact(id, addressBookDTO);
+        if (updatedContact != null) {
+            return new ResponseEntity<>(updatedContact, HttpStatus.OK);
         }
         return new ResponseEntity<>("Contact not found with id: " + id, HttpStatus.NOT_FOUND);
     }

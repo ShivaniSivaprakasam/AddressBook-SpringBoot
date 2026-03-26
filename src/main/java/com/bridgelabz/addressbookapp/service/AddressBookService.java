@@ -1,5 +1,6 @@
 package com.bridgelabz.addressbookapp.service;
 
+import com.bridgelabz.addressbookapp.dto.AddressBookDTO;
 import com.bridgelabz.addressbookapp.model.AddressBook;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +11,7 @@ import java.util.List;
 public class AddressBookService {
 
     private List<AddressBook> addressBookList = new ArrayList<>();
+    private int contactIdCounter = 3;
 
     public AddressBookService() {
         addressBookList.add(new AddressBook(1, "Shivani", "Chennai", "Tamil Nadu"));
@@ -29,17 +31,23 @@ public class AddressBookService {
         return null;
     }
 
-    public AddressBook addContact(AddressBook addressBook) {
-        addressBookList.add(addressBook);
-        return addressBook;
+    public AddressBook addContact(AddressBookDTO addressBookDTO) {
+        AddressBook newContact = new AddressBook(
+                contactIdCounter++,
+                addressBookDTO.getName(),
+                addressBookDTO.getCity(),
+                addressBookDTO.getState()
+        );
+        addressBookList.add(newContact);
+        return newContact;
     }
 
-    public AddressBook updateContact(int id, AddressBook updatedAddressBook) {
+    public AddressBook updateContact(int id, AddressBookDTO addressBookDTO) {
         for (AddressBook contact : addressBookList) {
             if (contact.getId() == id) {
-                contact.setName(updatedAddressBook.getName());
-                contact.setCity(updatedAddressBook.getCity());
-                contact.setState(updatedAddressBook.getState());
+                contact.setName(addressBookDTO.getName());
+                contact.setCity(addressBookDTO.getCity());
+                contact.setState(addressBookDTO.getState());
                 return contact;
             }
         }
