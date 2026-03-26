@@ -3,6 +3,7 @@ package com.bridgelabz.addressbookapp.controller;
 import com.bridgelabz.addressbookapp.dto.AddressBookDTO;
 import com.bridgelabz.addressbookapp.model.AddressBook;
 import com.bridgelabz.addressbookapp.service.AddressBookService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,58 +22,90 @@ public class AddressBookController {
 
     @GetMapping
     public ResponseEntity<List<AddressBook>> getAllContacts() {
-        log.info("Received request to get all contacts");
-        return new ResponseEntity<>(addressBookService.getAllContacts(), HttpStatus.OK);
+        log.info("Fetching all contacts");
+        return new ResponseEntity<>(
+                addressBookService.getAllContacts(),
+                HttpStatus.OK
+        );
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getContactById(@PathVariable int id) {
-        log.info("Received request to get contact by id: {}", id);
+    public ResponseEntity<?> getContactById(
+            @PathVariable int id) {
 
-        AddressBook contact = addressBookService.getContactById(id);
+        log.info("Fetching contact {}", id);
+
+        AddressBook contact =
+                addressBookService.getContactById(id);
 
         if (contact != null) {
-            return new ResponseEntity<>(contact, HttpStatus.OK);
+            return new ResponseEntity<>(
+                    contact,
+                    HttpStatus.OK
+            );
         }
 
-        log.error("Contact not found in controller with id: {}", id);
-        return new ResponseEntity<>("Contact not found with id: " + id, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(
+                "Contact not found",
+                HttpStatus.NOT_FOUND
+        );
     }
 
     @PostMapping
-    public ResponseEntity<AddressBook> addContact(@RequestBody AddressBookDTO addressBookDTO) {
-        log.info("Received request to add contact: {}", addressBookDTO);
+    public ResponseEntity<AddressBook> addContact(
+            @Valid @RequestBody AddressBookDTO addressBookDTO) {
 
-        AddressBook newContact = addressBookService.addContact(addressBookDTO);
+        log.info("Adding contact");
 
-        return new ResponseEntity<>(newContact, HttpStatus.CREATED);
+        return new ResponseEntity<>(
+                addressBookService.addContact(addressBookDTO),
+                HttpStatus.CREATED
+        );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateContact(@PathVariable int id, @RequestBody AddressBookDTO addressBookDTO) {
-        log.info("Received request to update contact with id: {}", id);
+    public ResponseEntity<?> updateContact(
+            @PathVariable int id,
+            @Valid @RequestBody AddressBookDTO addressBookDTO) {
 
-        AddressBook updatedContact = addressBookService.updateContact(id, addressBookDTO);
+        log.info("Updating contact {}", id);
 
-        if (updatedContact != null) {
-            return new ResponseEntity<>(updatedContact, HttpStatus.OK);
+        AddressBook contact =
+                addressBookService.updateContact(id,
+                        addressBookDTO);
+
+        if (contact != null) {
+            return new ResponseEntity<>(
+                    contact,
+                    HttpStatus.OK
+            );
         }
 
-        log.error("Contact not found for update in controller with id: {}", id);
-        return new ResponseEntity<>("Contact not found with id: " + id, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(
+                "Contact not found",
+                HttpStatus.NOT_FOUND
+        );
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteContact(@PathVariable int id) {
-        log.info("Received request to delete contact with id: {}", id);
+    public ResponseEntity<String> deleteContact(
+            @PathVariable int id) {
 
-        boolean deleted = addressBookService.deleteContact(id);
+        log.info("Deleting contact {}", id);
+
+        boolean deleted =
+                addressBookService.deleteContact(id);
 
         if (deleted) {
-            return new ResponseEntity<>("Contact deleted successfully", HttpStatus.OK);
+            return new ResponseEntity<>(
+                    "Deleted Successfully",
+                    HttpStatus.OK
+            );
         }
 
-        log.error("Contact not found for delete in controller with id: {}", id);
-        return new ResponseEntity<>("Contact not found with id: " + id, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(
+                "Contact not found",
+                HttpStatus.NOT_FOUND
+        );
     }
 }
