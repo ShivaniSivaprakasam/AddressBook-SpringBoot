@@ -10,13 +10,8 @@ import java.util.List;
 @Service
 public class AddressBookService {
 
-    private List<AddressBook> addressBookList = new ArrayList<>();
-    private int contactIdCounter = 3;
-
-    public AddressBookService() {
-        addressBookList.add(new AddressBook(1, "Shivani", "Chennai", "Tamil Nadu"));
-        addressBookList.add(new AddressBook(2, "Rahul", "Bangalore", "Karnataka"));
-    }
+    private final List<AddressBook> addressBookList = new ArrayList<>();
+    private int contactIdCounter = 1;
 
     public List<AddressBook> getAllContacts() {
         return addressBookList;
